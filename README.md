@@ -1,6 +1,6 @@
 # Remote Employee Monitoring System (REMS)
 
-REMS is a comprehensive, production-ready enterprise application for tracking employee attendance, productivity, tasks, expenses, and system activities. Built with a decoupled architecture utilizing Django REST Framework (Backend) and React/Vite (Frontend).
+REMS is a comprehensive, production-ready enterprise application for tracking employee attendance, productivity, tasks, expenses, and system activities. Built with a decoupled architecture utilizing Django REST Framework (Backend) and React/Vite (Frontend)...
 
 ## Prerequisites
 
