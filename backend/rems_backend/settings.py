@@ -126,7 +126,7 @@ CORS_ALLOWED_ORIGINS = [
 
 frontend_url = os.getenv('FRONTEND_URL')
 if frontend_url:
-    CORS_ALLOWED_ORIGINS.append(frontend_url)
+    CORS_ALLOWED_ORIGINS.append(frontend_url.rstrip('/'))
 
 render_external_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 if render_external_hostname:
