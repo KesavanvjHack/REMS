@@ -90,7 +90,8 @@ export const AuthProvider = ({ children }) => {
   const connectWebSocket = useCallback((currentUser) => {
     if (wsRef.current || !currentUser) return;
     try {
-      const ws = new WebSocket('ws://localhost:8000/ws/status/');
+      const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/status/';
+      const ws = new WebSocket(WS_URL);
       
       ws.onopen = () => {
         console.log('Status WebSocket Connected');
