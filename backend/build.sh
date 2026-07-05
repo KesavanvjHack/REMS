@@ -8,6 +8,8 @@ python manage.py migrate
 
 # Auto-create superuser if not exists
 python -c "
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rems_backend.settings')
 import django
 django.setup()
 from core.models import User
