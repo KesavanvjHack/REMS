@@ -105,6 +105,12 @@ class RequestOTPView(APIView):
             # Also log to standard output for ease of local testing
             print(f"\n[ALERT] Real-time SMTP dispatch failed: {mail_err}")
             print(f"OTP code printed to console fallback: {otp_code}\n")
+            user_exists = User.objects.filter(email=email).exists()
+            return Response({
+                'detail': 'SMTP is blocked by Render Free Tier. For this demo, use the fallback OTP.',
+                'user_exists': user_exists,
+                'fallback_otp': otp_code
+            })
 
         # Determine if user exists for frontend logic
         user_exists = User.objects.filter(email=email).exists()
@@ -359,6 +365,10 @@ class ForgotPasswordView(APIView):
             # Also log to standard output for ease of local testing
             print(f"\n[ALERT] Real-time SMTP dispatch failed: {mail_err}")
             print(f"Forgot Password Reset OTP code printed to console fallback: {otp_code}\n")
+            return Response({
+                'detail': 'SMTP is blocked by Render Free Tier. For this demo, use the fallback OTP.',
+                'fallback_otp': otp_code
+            })
 
         return Response({
             'detail': 'Verification code sent to your email.'

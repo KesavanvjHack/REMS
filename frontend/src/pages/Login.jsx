@@ -42,8 +42,13 @@ const Login = () => {
     setLoading(true);
     try {
       // Step 1: Request OTP for login
-      await api.post('/auth/request-otp/', { email });
-      toast.success("Verification code has been sent to your email.");
+      const response = await api.post('/auth/request-otp/', { email });
+      if (response.data?.fallback_otp) {
+        toast.success(`SMTP Blocked (Free Tier). Your demo OTP is: ${response.data.fallback_otp}`, { duration: 10000 });
+        setOtp(response.data.fallback_otp);
+      } else {
+        toast.success("Verification code has been sent to your email.");
+      }
       setStep(2);
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Failed to initiate login. Check credentials.');

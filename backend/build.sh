@@ -14,8 +14,8 @@ import django
 django.setup()
 from core.models import User
 import os
-email = os.environ.get('SUPERUSER_EMAIL', 'admin@rems.com')
-password = os.environ.get('SUPERUSER_PASSWORD', 'AdminPassword123')
+email = os.environ.get('SUPERUSER_EMAIL', 'g.kesavaperumalvnr@gmail.com')
+password = os.environ.get('SUPERUSER_PASSWORD', 'xwtfdyrelarqhzwq')
 if not User.objects.filter(email=email).exists():
     User.objects.create_superuser(email=email, password=password, first_name='Admin', last_name='User')
     print('Superuser created successfully!')
