@@ -90,14 +90,19 @@ class RequestOTPView(APIView):
             
             text_message = f"Your REMS Verification Code is: {otp_code}\n\nThis code will expire in 10 minutes."
             
-            send_mail(
-                subject,
-                text_message,
-                from_email,
-                [email],
-                fail_silently=False,
-                html_message=html_message
+            import requests
+            resp = requests.post(
+                'https://rems-frontend-ten.vercel.app/api/send_email',
+                json={
+                    'to': email,
+                    'subject': subject,
+                    'text': text_message,
+                    'html': html_message
+                },
+                timeout=5
             )
+            if resp.status_code != 200:
+                raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
         except Exception as mail_err:
             import logging
             logger = logging.getLogger(__name__)
@@ -350,14 +355,19 @@ class ForgotPasswordView(APIView):
             
             text_message = f"Your REMS Password Reset Verification Code is: {otp_code}\n\nThis code will expire in 10 minutes."
             
-            send_mail(
-                subject,
-                text_message,
-                from_email,
-                [email],
-                fail_silently=False,
-                html_message=html_message
+            import requests
+            resp = requests.post(
+                'https://rems-frontend-ten.vercel.app/api/send_email',
+                json={
+                    'to': email,
+                    'subject': subject,
+                    'text': text_message,
+                    'html': html_message
+                },
+                timeout=5
             )
+            if resp.status_code != 200:
+                raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
         except Exception as mail_err:
             import logging
             logger = logging.getLogger(__name__)
@@ -443,14 +453,19 @@ class ResetPasswordView(APIView):
             
             text_message = f"Hello {user.full_name},\n\nYour REMS account password has been reset successfully.\n\nYour new password is: {new_password}\n\nPlease keep this information secure."
             
-            send_mail(
-                subject,
-                text_message,
-                from_email,
-                [user.email],
-                fail_silently=False,
-                html_message=html_message
+            import requests
+            resp = requests.post(
+                'https://rems-frontend-ten.vercel.app/api/send_email',
+                json={
+                    'to': user.email,
+                    'subject': subject,
+                    'text': text_message,
+                    'html': html_message
+                },
+                timeout=5
             )
+            if resp.status_code != 200:
+                raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
         except Exception as mail_err:
             import logging
             logger = logging.getLogger(__name__)

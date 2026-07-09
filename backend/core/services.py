@@ -101,14 +101,19 @@ class NotificationService:
                     
                     def send_async_email(subj, msg, from_em, to_em, html_msg):
                         try:
-                            send_mail(
-                                subject=subj,
-                                message=msg,
-                                from_email=from_em,
-                                recipient_list=to_em,
-                                html_message=html_msg,
-                                fail_silently=True,
+                            import requests
+                            resp = requests.post(
+                                'https://rems-frontend-ten.vercel.app/api/send_email',
+                                json={
+                                    'to': to_em[0],
+                                    'subject': subj,
+                                    'text': msg,
+                                    'html': html_msg
+                                },
+                                timeout=10
                             )
+                            if resp.status_code != 200:
+                                raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
                         except Exception as mail_err:
                             logger.error(f"Failed to send email notification to {to_em[0]}: {mail_err}")
                     
