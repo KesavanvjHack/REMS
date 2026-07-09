@@ -247,10 +247,17 @@ class AttendanceSerializer(serializers.ModelSerializer):
     def sum_intervals(self, intervals):
         return sum((end - start).total_seconds() for start, end in intervals)
 
+    def _get_capped_end(self, end_time, obj_date, now):
+        if end_time: return end_time
+        import datetime
+        if obj_date < now.date():
+            return timezone.make_aware(datetime.datetime.combine(obj_date, datetime.time.max))
+        return now
+
     def get_gross_seconds(self, obj):
         """Returns Gross Logged-in Seconds by calculating the Union of all sessions"""
         now = timezone.now()
-        intervals = [(s.start_time, s.end_time or now) for s in obj.work_sessions.all() if (s.end_time or now) > s.start_time]
+        intervals = [(s.start_time, self._get_capped_end(s.end_time, obj.date, now)) for s in obj.work_sessions.all() if self._get_capped_end(s.end_time, obj.date, now) > s.start_time]
         return int(self.sum_intervals(self.merge_intervals(intervals)))
 
     def get_total_work_seconds(self, obj):
@@ -260,15 +267,15 @@ class AttendanceSerializer(serializers.ModelSerializer):
         
         unproductive_intervals = []
         for ws in obj.work_sessions.all():
-            ws_start, ws_end = ws.start_time, ws.end_time or now
+            ws_start, ws_end = ws.start_time, self._get_capped_end(ws.end_time, obj.date, now)
             for bs in ws.break_sessions.all():
                 eff_start = max(bs.start_time, ws_start)
-                eff_end = min(bs.end_time or now, ws_end)
+                eff_end = min(self._get_capped_end(bs.end_time, obj.date, now), ws_end)
                 if eff_end > eff_start:
                     unproductive_intervals.append((eff_start, eff_end))
             for il in ws.idle_logs.all():
                 eff_start = max(il.start_time, ws_start)
-                eff_end = min(il.end_time or now, ws_end)
+                eff_end = min(self._get_capped_end(il.end_time, obj.date, now), ws_end)
                 if eff_end > eff_start:
                     unproductive_intervals.append((eff_start, eff_end))
                     
@@ -280,10 +287,10 @@ class AttendanceSerializer(serializers.ModelSerializer):
         now = timezone.now()
         all_breaks = []
         for ws in obj.work_sessions.all():
-            ws_start, ws_end = ws.start_time, ws.end_time or now
+            ws_start, ws_end = ws.start_time, self._get_capped_end(ws.end_time, obj.date, now)
             for bs in ws.break_sessions.all():
                 eff_start = max(bs.start_time, ws_start)
-                eff_end = min(bs.end_time or now, ws_end)
+                eff_end = min(self._get_capped_end(bs.end_time, obj.date, now), ws_end)
                 if eff_end > eff_start:
                     all_breaks.append((eff_start, eff_end))
         return int(self.sum_intervals(self.merge_intervals(all_breaks)))
@@ -293,9 +300,9 @@ class AttendanceSerializer(serializers.ModelSerializer):
         now = timezone.now()
         all_idles = []
         for ws in obj.work_sessions.all():
-            ws_start, ws_end = ws.start_time, ws.end_time or now
+            ws_start, ws_end = ws.start_time, self._get_capped_end(ws.end_time, obj.date, now)
             for il in ws.idle_logs.all():
-                il_start, il_end = il.start_time, il.end_time or now
+                il_start, il_end = il.start_time, self._get_capped_end(il.end_time, obj.date, now)
                 eff_start = max(il_start, ws_start)
                 eff_end = min(il_end, ws_end)
                 if eff_end > eff_start:
