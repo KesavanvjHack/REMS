@@ -110,7 +110,7 @@ class NotificationService:
                                     'text': msg,
                                     'html': html_msg
                                 },
-                                timeout=10
+                                timeout=20
                             )
                             if resp.status_code != 200:
                                 raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")

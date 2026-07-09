@@ -41,12 +41,7 @@ const SignUp = () => {
         toast.error('User already exists. Please sign in.');
         navigate('/login');
       } else {
-        if (res.data?.fallback_otp) {
-          toast.success(`SMTP Blocked (Free Tier). Your demo OTP is: ${res.data.fallback_otp}`, { duration: 10000 });
-          setOtp(res.data.fallback_otp);
-        } else {
-          toast.success('Verification code sent to your email.');
-        }
+        toast.success('Verification code sent to your email.');
         setStep(2);
       }
     } catch (err) {

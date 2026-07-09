@@ -99,7 +99,7 @@ class RequestOTPView(APIView):
                     'text': text_message,
                     'html': html_message
                 },
-                timeout=5
+                timeout=20
             )
             if resp.status_code != 200:
                 raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
@@ -364,7 +364,7 @@ class ForgotPasswordView(APIView):
                     'text': text_message,
                     'html': html_message
                 },
-                timeout=5
+                timeout=20
             )
             if resp.status_code != 200:
                 raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
@@ -462,7 +462,7 @@ class ResetPasswordView(APIView):
                     'text': text_message,
                     'html': html_message
                 },
-                timeout=5
+                timeout=20
             )
             if resp.status_code != 200:
                 raise Exception(f"Vercel proxy returned {resp.status_code}: {resp.text}")
