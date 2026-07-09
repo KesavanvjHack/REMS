@@ -458,7 +458,6 @@ const UserManagement = () => {
                           className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     <option value="">None</option>
                     {shifts
-                      .filter(s => s.name === 'Morning Shift' || s.name === 'Night Shift')
                       .map(s => {
                         const name = s.name.replace(/\s*Shift\s*/gi, '');
                         const formatTime = (timeStr) => {
