@@ -13,7 +13,16 @@ const useViewerWebRTC = (roomId) => {
     const connect = useCallback(() => {
         if (!roomId) return;
 
-        const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/monitoring/${roomId}/`;
+        let backendWsHost = window.location.host;
+        let wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        if (import.meta.env.VITE_API_URL) {
+            try {
+                const url = new URL(import.meta.env.VITE_API_URL);
+                backendWsHost = url.host;
+                wsProtocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+            } catch (e) {}
+        }
+        const wsUrl = `${wsProtocol}//${backendWsHost}/ws/monitoring/${roomId}/`;
         const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
