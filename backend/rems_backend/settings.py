@@ -128,6 +128,10 @@ frontend_url = os.getenv('FRONTEND_URL')
 if frontend_url:
     CORS_ALLOWED_ORIGINS.append(frontend_url.rstrip('/'))
 
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://rems-frontend.*\.vercel\.app$",
+]
+
 render_external_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
 if render_external_hostname:
     ALLOWED_HOSTS.append(render_external_hostname)
