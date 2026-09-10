@@ -277,10 +277,10 @@ const TeamAttendance = () => {
             </thead>
             <tbody className="divide-y divide-slate-700/50 text-sm">
               {currentData.map((record) => {
-                  const todayStr = new Date().toISOString().split('T')[0];
                   const now = new Date();
                   const istString = now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
                   const istDate = new Date(istString);
+                  const todayStr = format(istDate, 'yyyy-MM-dd');
 
                   const [recYear, recMonth, recDay] = record.date.split('-').map(Number);
                   const shiftStartDate = new Date(recYear, recMonth - 1, recDay);
@@ -290,7 +290,7 @@ const TeamAttendance = () => {
                   const shiftEndDate = new Date(recYear, recMonth - 1, recDay);
                   const endMin = parseTime12hToMinutes(record.shift_end || '05:30 PM');
                   shiftEndDate.setHours(Math.floor(endMin / 60), endMin % 60, 0, 0);
-                  if (endMin <= startMin) {
+                  if (startMin > 0 && endMin > 0 && endMin <= startMin) {
                     shiftEndDate.setDate(shiftEndDate.getDate() + 1);
                   }
 
@@ -300,9 +300,19 @@ const TeamAttendance = () => {
                   const isToday = record.date === todayStr;
                   const yesterday = new Date(istDate);
                   yesterday.setDate(yesterday.getDate() - 1);
-                  const yesterdayStr = yesterday.toISOString().split('T')[0];
+                  const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
 
-                  const isRecordActive = isToday || (record.date === yesterdayStr && endMin <= startMin);
+                  const isOvernightActive = (
+                    record.date === yesterdayStr &&
+                    startMin > 0 &&
+                    endMin > 0 &&
+                    endMin < startMin &&
+                    isBeforeShiftEnd &&
+                    !record.has_completed_session &&
+                    !currentData.some(a => a.user === record.user && a.date === todayStr && a.first_login)
+                  );
+
+                  const isRecordActive = isToday || isOvernightActive;
 
                   const isCalculating = isRecordActive && 
                                       isBeforeShiftEnd &&

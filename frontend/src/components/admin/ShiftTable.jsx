@@ -33,7 +33,7 @@ const ShiftTableRow = React.memo(({ record, user, wsStatus, handleOverride, toda
   const shiftEndDate = new Date(recYear, recMonth - 1, recDay);
   const endMin = parseTime12hToMinutes(record.shift_end || '05:30 PM');
   shiftEndDate.setHours(Math.floor(endMin / 60), endMin % 60, 0, 0);
-  if (endMin <= startMin) {
+  if (startMin > 0 && endMin > 0 && endMin <= startMin) {
     shiftEndDate.setDate(shiftEndDate.getDate() + 1);
   }
 
@@ -43,9 +43,18 @@ const ShiftTableRow = React.memo(({ record, user, wsStatus, handleOverride, toda
   const isToday = record.date === todayStr;
   const yesterday = new Date(istDate);
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
 
-  const isRecordActive = isToday || (record.date === yesterdayStr && endMin <= startMin);
+  const isOvernightActive = (
+    record.date === yesterdayStr &&
+    startMin > 0 &&
+    endMin > 0 &&
+    endMin < startMin &&
+    isBeforeShiftEnd &&
+    !record.has_completed_session
+  );
+
+  const isRecordActive = isToday || isOvernightActive;
 
   const isCalculating = isRecordActive && 
                       isBeforeShiftEnd &&
